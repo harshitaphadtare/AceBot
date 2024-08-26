@@ -9,7 +9,8 @@ const discordToken = process.env.DISCORD_TOKEN;
 const perspectiveApiKey = process.env.PERSPECTIVE_API_KEY;
 const resourceChannelId = process.env.RESOURCE_CHANNEL_ID;
 const remindersChannelId = process.env.REMINDER_CHANNEL_ID;
-const pomodoroChannelId = process.env.POMODORO_CHANNEL_ID; 
+const pomodoroChannelId = process.env.POMODORO_CHANNEL_ID;
+const feedbackChannelId =  process.env.FEEDBACK_CHANNEL_ID;
 
 // Map to track user warnings
 const userWarnings = new Map();
@@ -31,7 +32,7 @@ const resources = {
   'typescript': 'https://www.typescriptlang.org/',
   'docker': 'https://www.docker.com/',
   'aws': 'https://aws.amazon.com/'
-};
+}; 
 
 const client = new Client({
   intents: [
@@ -136,22 +137,85 @@ client.on('messageCreate', async (message) => {
     }
   }
 
+  //feedback
+  if (message.content.startsWith('!feedback')) {
+    const feedback = message.content.slice(10).trim();
+
+    if (feedback) {
+      const feedbackMessage = `**Feedback from @${message.author.tag}:**\n${feedback}`;
+      client.channels.cache.get(feedbackChannelId).send(feedbackMessage);
+    } else {
+      await message.channel.send('Please provide feedback after the command.');
+    }
+    return;
+  }
+
   // Pomodoro Timer
-  
+  if (message.content.startsWith('!pomodoro')) {
+    const [_, duration] = message.content.split(' ');
+    const time = duration ? parseInt(duration) * 60 * 1000 : defaultPomodoro;
+    const endTime = Date.now() + time;
+
+    const pomodoroChannel = message.guild.channels.cache.get(pomodoroChannelId);
+
+    pomodoroChannel.send(`Pomodoro started for ${time / 60000} minutes.`);
+
+    const motivationalMessages = [
+      "You got this!! 💪",
+      "Keep going, you're doing great!",
+      "Stay focused, success is near!",
+      "You're on the right track, keep it up!",
+      "Almost there! Push through!"
+    ];
+
+    // Sending motivational message at the halfway point
+    const halfwayPoint = time / 2;
+    setTimeout(() => {
+      const randomIndex = Math.floor(Math.random() * motivationalMessages.length);
+      pomodoroChannel.send(motivationalMessages[randomIndex]);
+    }, halfwayPoint);
+
+    // Sending motivational message at a quarter way point
+    const quarterPoint = time / 4;
+    setTimeout(() => {
+      const randomIndex = Math.floor(Math.random() * motivationalMessages.length);
+      pomodoroChannel.send(motivationalMessages[randomIndex]);
+    }, quarterPoint);
+
+    // Sending motivational message at three-quarters way point
+    const threeQuarterPoint = 3 * time / 4;
+    setTimeout(() => {
+      const randomIndex = Math.floor(Math.random() * motivationalMessages.length);
+      pomodoroChannel.send(motivationalMessages[randomIndex]);
+    }, threeQuarterPoint);
+
+    setTimeout(() => {
+      pomodoroChannel.send('Pomodoro session ended. Take a break!');
+    }, time);
+  }
 
   // Help command
   if (message.content === '!help') {
     const helpMessage = `
     **🤖 Bot Commands Available:**
     
-    1. **!addresource <keyword> <link>** 
+    1. \`!addresource <keyword> <link>\`
       - **Description:** Add a new resource to the list. 
       - **Example:** \`!addresource python https://www.python.org/\`
-
-    2. **!remindme <reminder> in <minutes>**  
+    
+    2. \`!remindme <reminder> in <minutes>\`
       - **Description:** Set a reminder that will be sent to you via DM after a specified number of minutes. 
       - **Example:** \`!remindme Take a break in 10\`
-    `;
+  
+    3. \`!pomodoro [duration]\`
+      - **Description:** Start a Pomodoro timer. By default, the timer is set for 25 minutes. You can specify a custom duration in minutes. The bot will send a motivational message at various intervals during the session.
+      - **Example:** \`!pomodoro 30\` (starts a 30-minute Pomodoro timer)
+    
+    4. \`!feedback <message>\`
+      - **Description:** Send feedback about the bot or server. Your feedback will be sent to the designated feedback channel.
+      - **Example:** \`!feedback This bot is amazing!\`
+  
+    ---------------------`;
 
     await message.channel.send(helpMessage);
     return; // Skip spam detection for this command
