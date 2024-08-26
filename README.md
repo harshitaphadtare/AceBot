@@ -50,7 +50,7 @@ To install and set up the bot on your local machine, follow these steps:
 
    - `!help` - Lists all available commands.
    - `!addresource <keyword> <link>` - Adds a new resource to the bot.
-   - `!remindme <message> in <minutes>` - Sets a reminder.
+   - `!remindme <message> in <minutes/hours>` - Sets a reminder.
    - `!pomodoro <duration>` - Starts a Pomodoro timer.
    - `!feedback <message>` - Sends feedback to the admin.
 
