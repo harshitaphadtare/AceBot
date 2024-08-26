@@ -4,7 +4,7 @@ This Discord bot is designed to assist study groups by providing a variety of us
 
 ## Features
 
-- **Spam Detection and Control**: Automatically detect and remove spam messages using the OOPSpam API.
+- **Spam Detection and Control**: Automatically detect and remove spam messages using the Perspective Google API.
 - **Resource Sharing**: Automatically share resources based on keywords and allow users to dynamically add new resources.
 - **Assignment Reminders**: Set scheduled and custom reminders for assignments and tasks.
 - **Pomodoro Timer**: Manage study sessions using the Pomodoro technique with default and custom durations.
@@ -50,7 +50,7 @@ To install and set up the bot on your local machine, follow these steps:
 
    - `!help` - Lists all available commands.
    - `!addresource <keyword> <link>` - Adds a new resource to the bot.
-   - `!remindme <message> in <seconds>` - Sets a reminder.
+   - `!remindme <message> in <minutes>` - Sets a reminder.
    - `!pomodoro <duration>` - Starts a Pomodoro timer.
    - `!feedback <message>` - Sends feedback to the admin.
 
@@ -61,11 +61,16 @@ To install and set up the bot on your local machine, follow these steps:
   ```
   !addresource python https://www.python.org/
   ```
+- To get resource:
+
+  ```
+  share python resource
+  ```
 
 - To set a reminder:
 
   ```
-  !remindme "Complete the assignment" in 3600
+  !remindme "Complete the assignment" in 5
   ```
 
 - To start a 25-minute Pomodoro session:
